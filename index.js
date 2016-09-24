@@ -48,6 +48,19 @@ module.exports = function(opts = {}) {
             });
     }
 
+    // ref string optional
+    function getContents(owner, repo, path, ref) {
+        // TODO: check if ref works
+        const _opts = Object.assign({ ref }, opts);
+
+        return ghGot(`repos/${owner}/${repo}/contents/${path}`, _opts).then(res => res.body);
+    }
+
+    function getContentsStr(owner, repo, path, ref) {
+        return getContents(owner, repo, path, ref)
+            .then(contents => Buffer.from(contents.content, 'base64').toString());
+    }
+
     function getRef(owner, repo, ref) {
         return ghGot(`repos/${owner}/${repo}/git/refs/${ref}`, opts)
             .then(refData => refData.body);
@@ -98,7 +111,7 @@ module.exports = function(opts = {}) {
         base && (query.base = base);
         head && (query.head = `${head.owner || owner}:${head.branch || 'master'}`);
 
-        return ghGot(`repos/${owner}/${repo}/pulls`, Object.assign({}, opts, { query }))
+        return ghGot(`repos/${owner}/${repo}/pulls`, Object.assign({ query }, opts))
             .then(pullsList => pullsList.body);
     }
 
@@ -130,9 +143,16 @@ module.exports = function(opts = {}) {
             });
     }
 
+    function getBlob(owner, repo, sha) {
+        // https://developer.github.com/v3/git/blobs/#get-a-blob
+        return ghGot(`/repos/${owner}/${repo}/git/blobs/${sha}`, opts)
+            .then(blob => blob.body);
+    }
+
     function createBlob(owner, repo, file) {
         const isStr = typeof file.content === 'string';
 
+        // https://developer.github.com/v3/git/blobs/#create-a-blob
         return ghGot.post(`repos/${owner}/${repo}/git/blobs`, Object.assign({}, opts, {
             body: {
                 owner,
@@ -173,9 +193,8 @@ module.exports = function(opts = {}) {
     // commit.email string  The email of the author (or committer) of the commit
     // commit.date  string  Indicates when this commit was authored (or committed). This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ
     function _commit(owner, repo, commit) {
-        return ghGot.post(`repos/${owner}/${repo}/git/commits`, Object.assign({}, opts, {
-            body: commit
-        })).then(commitData => commitData.body);
+        return ghGot.post(`repos/${owner}/${repo}/git/commits`, Object.assign({ body: commit }, opts))
+            .then(commitData => commitData.body);
     }
 
     // commit.branch = 'master'
@@ -227,6 +246,8 @@ module.exports = function(opts = {}) {
     return {
         exists,
         fork,
+        getContents,
+        getContentsStr,
 
         getRef,
         createRef,
@@ -238,6 +259,7 @@ module.exports = function(opts = {}) {
         listPulls,
         pull,
 
+        getBlob,
         createBlob,
         getCommit,
         getTree,
