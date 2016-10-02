@@ -50,8 +50,7 @@ module.exports = function(opts = {}) {
 
     // ref string optional
     function getContents(owner, repo, path, ref) {
-        // TODO: check if ref works
-        const _opts = Object.assign({ ref }, opts);
+        const _opts = Object.assign({ query: { ref } }, opts);
 
         return ghGot(`repos/${owner}/${repo}/contents/${path}`, _opts).then(res => res.body);
     }
