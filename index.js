@@ -36,8 +36,8 @@ module.exports = function(opts = {}) {
             });
     }
 
-    function fork(owner, repo) {
-        return exists(owner, repo)
+    function fork(owner, repo, newOwner) {
+        return exists(newOwner || owner, repo)
             .then(doesExists => {
                 return doesExists ? true : _fork(owner, repo);
             })
