@@ -1,6 +1,6 @@
 {
   "name": "github-node-api",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "High level wrapper on top of gh-got.",
   "main": "index.js",
   "directories": {
