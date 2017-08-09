@@ -22,7 +22,7 @@ BranchDiffersError.prototype = Error.prototype;
 
 module.exports = function(opts = {}) {
     function _fork(owner, repo) {
-        return ghGot.post(`repos/${owner}/${repo}/forks`, Object.assing({}, opts, { timeout: 5000 }));
+        return ghGot.post(`repos/${owner}/${repo}/forks`, Object.assign({}, opts, { timeout: 5000 }));
     }
 
     // checks if repo exists
